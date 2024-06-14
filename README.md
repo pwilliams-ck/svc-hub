@@ -1,7 +1,8 @@
 # Micro Service Hub
 
-This monorepo contains the possible micro services solution to power a cloud
-platform. Services, include:
+This monorepo contains micro services to power a cloud platform. This is
+currently using the Chi router in most places, refactoring to use only the Go
+standard library is planned. Services, include:
 
 - Front End "Service"
 - Broker Service
