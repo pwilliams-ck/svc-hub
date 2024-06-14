@@ -1,7 +1,7 @@
-# CloudKey Platform Service Hub
+# Micro Service Hub
 
-This monorepo contains the possible micro services solution to power CloudKey
-Platform automation. Services, include:
+This monorepo contains the possible micro services solution to power a cloud
+platform. Services, include:
 
 - Front End "Service"
 - Broker Service
@@ -11,8 +11,6 @@ Platform automation. Services, include:
 
 More services will be added as needed, here is a diagram for the general
 overview and state of the project.
-
-![Diagram](./docs/images/logical-layer-micro-services.png)
 
 ## Getting Started
 
