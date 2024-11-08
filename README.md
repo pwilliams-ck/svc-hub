@@ -18,7 +18,6 @@ overview and state of the project.
 
 ### Prerequisites
 
-- Go
 - Docker
 - Make
 
@@ -32,12 +31,10 @@ To get started, clone the repo and `cd` into the project root, then into
 commands.
 
 1. Compile and run back end - `make up_build`
-2. Compile and run front end - `make start`
-3. Stop front end - `make stop`
-4. Stop back end - `make down`
-5. Repeat as necessary
+2. Stop back end - `make down`
+3. Repeat as necessary
 
-Visit `http://localhost` to access the service testing page.
+Visit `http://localhost:3000` to access the service testing page.
 
 ## Services
 
@@ -65,51 +62,6 @@ those credentials in the DB instead.
 
 Advanced features for managing keys and credentials can be added here in the
 future.
-
-#### Hostbill Web Hook Validation
-
-Some notes from Hostbill docs regarding web hook authentication and validation.
-
-> Each request is signed with your secret key, this allows you to validate that
-> the events were sent by your HostBill installation, not by a third party.
->
-> Here are the steps required to validate request signature.
->
-> Step 1: Obtain timestamp and signature from response headers, the HB-Signature
-> header contains signature that you want to verify and HB-Timestamp contains
-> timestamp used to generate that signature.
->
-> Step 2: Prepare the payload string by concatenating:
->
-> Step 3: Compute a HMAC with the SHA256 hash function. Use secret as the key,
-> and use the payload string as the message.
->
-> Step 4: Compare the signature in the HB-Signature header to the one computed
-> in step 3. If it matches, compute the difference between the current timestamp
-> and the received timestamp, then decide if the difference is within your
-> tolerance.
-
-See the provided PHP snippet for details.
-
-```php
-<?php
-
-$secret = ''; // paste your Secret here
-
-//fetch request body
-$data = file_get_contents('php://input');
-$payload = $_SERVER["HTTP_HB_TIMESTAMP"] . $data;
-
-$signature = hash_hmac('sha256', $payload, $secret);
-
-//compare signature in header with the one computed above
-if($signature !== $_SERVER["HTTP_HB_SIGNATURE"])
-    die('invalid signature')
-
-// signature valid, verify timestamp
-if($_SERVER["HTTP_HB_TIMESTAMP"] < time() - 60)
-    die('timestamp older than 60 sec')
-```
 
 ### Listener Service
 
