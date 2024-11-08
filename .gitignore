@@ -1,0 +1,49 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*App
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Go workspace file
+go.work
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Log files
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# Environment files
+.envrc
+.env
+.env.*
+
+# macOS shenanigans
+.DS_Store
+
+# Compiled Go binaries
+bin/
+dist/
+
+# Go build cache
+.cache/
+
+# DB testing data
+infra/db-data/
+
+# Front end

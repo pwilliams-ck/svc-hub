@@ -1,0 +1,8 @@
+# Security config
+/tls
+
+# App  logs
+app.log
+
+# Environment variables
+.envrc

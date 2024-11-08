@@ -1,0 +1,167 @@
+{{template "base" .}}
+
+{{define "content" }}
+<div class="bg-gradient-to-b from-gray-900 to-gray-800 text-white rounded-xl">
+    <div class="container mx-auto px-4 py-12">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header Section -->
+            <div class="text-center mb-12">
+                <h1 class="text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-800">
+                    CloudKey Platform Microservices
+                </h1>
+                <p class="text-xl text-gray-300 mb-6">Test services with the click of a button! 🚀</p>
+                <div class="h-1 w-156 bg-gradient-to-r from-blue-600 to-amber-700 mx-auto rounded-full"></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-16 justify-center mb-12">
+               <button id="brokerBtn" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 focus:outline-none">
+                    Test Broker Service
+                </button>
+                <button id="authBrokerBtn" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg shadow hover:from-amber-600 hover:to-amber-700 transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-amber-400 focus:ring-opacity-50 focus:outline-none">
+                    Test Auth Service
+                </button>
+                <button id="logBtn" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 focus:outline-none">
+                    Test Log Service
+                </button>
+            </div>
+
+            <!-- Results Section -->
+                <div class="h-1 w-156 bg-gradient-to-r from-blue-600 to-amber-700 mx-auto rounded"></div>
+            <div class="my-24">
+                <h4 class="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Results</h4>
+                <div id="output" class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow">
+                    <span class="text-gray-400">Output shows here...</span>
+                </div>
+            </div>
+
+            <!-- Request/Response Grid -->
+            <div class="grid grid-cols-2 gap-8 space-between">
+                <div class="space-y-4">
+                    <h4 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Sent</h4>
+                    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow">
+                        <pre id="payload" class="text-gray-300 font-mono"><span class="text-gray-400">Nothing sent yet...</span></pre>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <h4 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Received</h4>
+                    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow">
+                        <pre id="received" class="text-gray-300 font-mono"><span class="text-gray-400">Nothing received yet...</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+{{end}}
+
+{{define "js"}}
+<script>
+    let brokerBtn = document.getElementById("brokerBtn");
+    let authBrokerBtn = document.getElementById("authBrokerBtn");
+    let logBtn = document.getElementById("logBtn");
+    let output = document.getElementById("output");
+    let sent = document.getElementById("payload");
+    let received = document.getElementById("received");
+
+    const updateOutput = (message, isError = false) => {
+        const timestamp = new Date().toLocaleTimeString();
+        output.innerHTML += `
+            <div class="mb-2 ${isError ? 'text-red-400' : 'text-green-400'}">
+                <span class="text-gray-500">[${timestamp}]</span> ${message}
+            </div>
+        `;
+    };
+
+    logBtn.addEventListener("click", function() {
+        const payload = {
+            action: "log",
+            log: {
+                name: "event",
+                data: "Some kind of data",
+            }
+        }
+
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+
+        const body = {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: headers,
+        }
+
+        fetch("http:\/\/localhost:8080/handle", body)
+        .then((response) => response.json())
+        .then((data) => {
+            sent.innerHTML = JSON.stringify(payload, undefined, 4);
+            received.innerHTML = JSON.stringify(data, undefined, 4);
+            if (data.error) {
+                updateOutput(`Error: ${data.message}`, true);
+            } else {
+                updateOutput(`Response from broker service: ${data.message}`);
+            }
+        })
+        .catch((error) => {
+            updateOutput(`Error: ${error}`, true);
+        })
+    })
+
+    authBrokerBtn.addEventListener("click", function() {
+        const payload = {
+            action: "auth",
+            auth: {
+                email: "admin@example.com",
+                password: "verysecret",
+            }
+        }
+
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+
+        const body = {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: headers,
+        }
+
+        fetch("http:\/\/localhost:8080/handle", body)
+        .then((response) => response.json())
+        .then((data) => {
+            sent.innerHTML = JSON.stringify(payload, undefined, 4);
+            received.innerHTML = JSON.stringify(data, undefined, 4);
+            if (data.error) {
+                updateOutput(`Error: ${data.message}`, true);
+            } else {
+                updateOutput(`Response from  authentication service: ${data.message}`);
+            }
+        })
+        .catch((error) => {
+            updateOutput(`Error: ${error}`, true);
+        })
+    })
+
+    brokerBtn.addEventListener("click", function() {
+        const body = {
+            method: 'POST',
+        }
+
+        fetch("http:\/\/localhost:8080", body)
+            .then((response) => response.json())
+            .then((data) => {
+                sent.innerHTML = "Empty post request";
+                received.innerHTML = JSON.stringify(data, undefined, 4);
+                if (data.error) {
+                    console.log(data.message);
+                } else {
+                    updateOutput(`Response from logger service: ${data.message}`);
+                }
+            })
+            .catch((error) => {
+                updateOutput(`Error: ${error}`, true);
+            })
+    })
+</script>
+{{end}}

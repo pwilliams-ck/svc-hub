@@ -1,0 +1,118 @@
+services:
+  broker-svc:
+    build:
+      context: ./../broker-svc
+      dockerfile: ./../broker-svc/broker-svc.dockerfile
+    restart: always
+    ports:
+      - "8080:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  hostbill-svc:
+    build:
+      context: ./../hostbill-svc
+      dockerfile: ./../hostbill-svc/hostbill-svc.dockerfile
+    restart: always
+    ports:
+      - "8082:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  duo-svc:
+    build:
+      context: ./../duo-svc
+      dockerfile: ./../duo-svc/duo-svc.dockerfile
+    restart: always
+    ports:
+      - "8083:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  # Authentication service and Postgres DB
+  auth-svc:
+    build:
+      context: ./../auth-svc
+      dockerfile: ./../auth-svc/auth-svc.dockerfile
+    restart: always
+    ports:
+      - "8081:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      DSN:
+        "host=postgres port=5432 user=postgres password=password dbname=users
+        sslmode=disable timezone=UTC connect_timeout=5"
+
+  postgres:
+    image: "postgres:14.2"
+    ports:
+      - "5432:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/
+
+  # Logger service and Mongo DB
+  logger-svc:
+    build:
+      context: ./../logger-svc
+      dockerfile: ./../logger-svc/logger-svc.dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  mongo:
+    image: "mongo:4.2.16-bionic"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: logs
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./db-data/mongo/:/data/db
+
+  # Queue service and RabbitMQ DB
+  queue-svc:
+    build:
+      context: ./../queue-svc
+      dockerfile: ./../queue-svc/queue-svc.dockerfile
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  rabbitmq:
+    image: "rabbitmq:3.13.3-alpine"
+    ports:
+      - "5672:5672"
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - ./db-data/rabbitmq/:/var/lib/rabbitmq/
+    ## frontend servcie | next.js
+  frontend:
+    build:
+      context: ./../frontend-svc
+      dockerfile: ./../frontend-svc/frontend-svc.dockerfile # Change Dockerfile to frontend-svc.dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./../frontend-svc:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true

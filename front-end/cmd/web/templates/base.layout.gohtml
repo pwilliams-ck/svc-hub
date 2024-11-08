@@ -1,0 +1,22 @@
+{{define "base" }}
+    <!doctype html>
+    <html lang="en">
+
+    {{template "header" .}}
+<body class="flex flex-col min-h-screen min-h-screen bg-gradient-to-t from-gray-900 to-gray-800">
+    {{template "header" .}}
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        {{block "content" .}}
+        {{end}}
+    </main>
+
+    {{template "footer" .}}
+
+    <!-- JavaScript -->
+    {{block "js" .}}
+    {{end}}
+</body>
+</html>
+{{end}}
+
