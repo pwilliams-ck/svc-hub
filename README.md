@@ -12,8 +12,6 @@ Platform automation. Services, include:
 More services will be added as needed, here is a diagram for the general
 overview and state of the project.
 
-![Diagram](./docs/images/logical-layer-micro-services.png)
-
 ## Getting Started
 
 ### Prerequisites
