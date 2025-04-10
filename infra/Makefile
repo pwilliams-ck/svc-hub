@@ -29,23 +29,23 @@ DUO_BINARY=duoApp
 .PHONY: up
 up:
 	@echo "Starting Docker images..."
-	docker-compose up -d
+	docker compose up -d
 	@echo "Docker images started!"
 
-## up_build: Stops docker-compose (if running), builds all projects and starts docker compose.
+## up_build: Stops docker compose (if running), builds all projects and starts docker compose.
 .PHONY: up_build
 up_build: build_broker build_auth build_logger build_queue build_hostbill build_duo build_front
 	@echo "Stopping docker images (if running...)"
-	docker-compose down
+	docker compose down
 	@echo "Building (when required) and starting docker images..."
-	docker-compose up --build -d
+	docker compose up --build -d
 	@echo "Docker images built and started!"
 
 ## down: Stop docker compose.
 .PHONY: down
 down:
 	@echo "Stopping docker compose..."
-	docker-compose down
+	docker compose down
 	@echo "Done!"
 
 ## build_broker: Builds the broker binary as a linux executable.
@@ -102,7 +102,7 @@ build_front:
 .PHONY: start
 start: build_front-svc
 	@echo "Starting front end"
-	cd ../front-end-svc && ./${FRONT_END_BINARY} &
+	cd ../front-end && ./${FRONT_END_BINARY} &
 
 ## stop: Stops the front end.
 .PHONY: stop
